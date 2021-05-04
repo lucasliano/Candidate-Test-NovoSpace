@@ -1,0 +1,3 @@
+cocotb
+git+https://github.com/nmigen/nmigen.git#egg=nmigen[builtin-yosys]
+git+https://gitlab.novo.space/ademski/nmigen-cocotb#egg=nmigen-cocotb
