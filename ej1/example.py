@@ -63,6 +63,7 @@ class Incrementador(Elaboratable):
         return m
 
 
+
 async def init_test(dut):
     cocotb.fork(Clock(dut.clk, 10, 'ns').start())
     dut.rst <= 1
