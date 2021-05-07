@@ -26,7 +26,6 @@ pip install bitstring
 	* [x] Plantear el circuito digital correspondiente
 	* [x] Verificar que no haya problemas con la instanciación
 	* [x] Simular el comportamiento
-	* [ ] Debuggear!
 	* [ ] Hacer tests!
 		* [x] Reset
 		* [x] Sumas, Restas
@@ -36,21 +35,22 @@ pip install bitstring
 		* [ ] Entradas a destiempo
 		* [ ] No r_ready en la salida
 		* [x] Evaluar el comportamiento para adders con distinta cantidad de bits
-	* [ ] Documentar!
+	* [x] Documentar!
 		* [x] Consultar herramienta y idioma de preferencia!
 		* [x] Comentar el código correspondiente a módulo
-		* [ ] Comentar el código correspondiente a los tests.
+		* [x] Comentar el código correspondiente a los tests.
+	* [x] Debuggear (Por el momento sin bugs)
 
 
 
 ### Segunda parte (2 días máximo)
-* [x] Leer la consigna del ejercicio 1 detalladamente
+* [x] Leer la consigna del ejercicio 2 detalladamente
 	* [ ] Consultar las dudas al respecto.
-* [ ] Ejecutar scripts de ejemplo y sacar conclusiones.
+* [ ] Ejecutar script de ejemplo y sacar conclusiones.
 * [ ] Investigar sobre las herramientas
 	* [ ] Sintaxis de Verilog
 	* [ ] Correcto uso de regular expresions
-* [ ] Replanificar el desarrollo de la solución del primer ejercicio
+* [ ] Replanificar el desarrollo de la solución del segundo ejercicio
 
 # Contacto
 
