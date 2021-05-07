@@ -5,7 +5,7 @@ from cocotb.triggers import RisingEdge, FallingEdge, Timer
 from cocotb.clock import Clock
 from random import randrange
 
-
+from bitstring import BitArray      # Used external module! pip install bitstring
 
 class Stream(Record):
     def __init__(self, width, **kwargs):
@@ -129,9 +129,6 @@ class Adder(Elaboratable):
         # Combinational logic
         # ===================
 
-        # comb += self.a.ready.eq((~self.r.valid) | (self.r.accepted())) # Si no tengo disponible la salida es porque se reseteo o a.valid o b.valid estan en 0
-        # comb += self.b.ready.eq((~self.r.valid) | (self.r.accepted())) # Cuando no tengo disponible la salida o cuando acepte
-
         with m.If(self.a.valid & self.b.valid):
             comb += [
                 self.a.ready.eq(1),                     # Indicate that i'm working with the registers
@@ -146,11 +143,11 @@ class Adder(Elaboratable):
 
         # Sequential logic
         # ===================
-        with m.If(self.a.valid & self.b.valid):         # Wait until both a_data and b_data ara vailable
-            sync += self.r.valid.eq(1)                  # Cuando estan las dos entradas para ser leidas
+        with m.If(self.a.valid & self.b.valid):         # Wait until both a_data and b_data available
+            sync += self.r.valid.eq(1)                  # Indicates that the result is available to be read
 
             sync += self.r.data.eq(self.a.data.as_signed() + self.b.data.as_signed())
-            # nMigen generates a signal(N+1FallingEdge) if we need so add two signal(N)
+            # nMigen generates a (N+1) signal if we need to add two (N) signals
             # More info: https://nmigen.info/nmigen/latest/lang.html#arithmetic-operators
         with m.Else():
             with m.If(self.r.accepted()):               # If r_ready & r_valid
@@ -169,23 +166,22 @@ async def init_test(dut):
     dut.rst <= 0
 
 
-def toCA2(arg, N):      # TODO
+def toCA2(arg, K):
     '''
     Function Description
     ------------------
-    Converts an int to the N-bit 2's complement representation
+    It takes an N-bit uint as an input and outputs the N-bit int.
 
     Parameters
     ----------
     arg : int
         Target number.
 
-    N : int
-        Number of bits of arg.
+    K : int
+        K = N - 1.
 
     '''
-    raise RuntimeError("This function is not finished")
-    return arg
+    return BitArray(uint=arg, length=K+1).int
 
 
 @cocotb.test()
@@ -234,7 +230,7 @@ async def reset_test(dut):
     assert recved == expected
 
 @cocotb.test()
-async def basic_add_subs(dut):
+async def basic_add_subs_test(dut):
     '''
     Test Description
     ------------------
@@ -260,12 +256,11 @@ async def basic_add_subs(dut):
 
 
     recved_processed = [toCA2(recved[_],width) for _ in range(len(recved))]         # Convert the int to a string containing the N-bit ca2 binary equivalent
-    expected_processed = [toCA2(expected[_],width) for _ in range(len(expected))]
 
-    assert recved_processed == expected_processed
+    assert recved_processed == expected
 
 @cocotb.test()
-async def overflow(dut):
+async def overflow_test(dut):
     '''
     Test Description
     ------------------
@@ -291,12 +286,12 @@ async def overflow(dut):
     recved = await stream_output.recv(len(data_a))  # Save the N values recieved
 
     recved_processed = [toCA2(recved[_],width) for _ in range(len(recved))]         # Convert the int to a string containing the N-bit ca2 binary equivalent
-    expected_processed = [toCA2(expected[_],width) for _ in range(len(expected))]
 
-    assert recved_processed == expected_processed
+
+    assert recved_processed == expected
 
 @cocotb.test()
-async def burst(dut):
+async def burst_test(dut):
     '''
     Test Description
     ------------------
@@ -323,9 +318,8 @@ async def burst(dut):
     recved = await stream_output.recv(N)            # Save the N values recieved
 
     recved_processed = [toCA2(recved[_],width) for _ in range(len(recved))]         # Convert the int to a string containing the N-bit ca2 binary equivalent
-    expected_processed = [toCA2(expected[_],width) for _ in range(len(expected))]
 
-    assert recved_processed == expected_processed
+    assert recved_processed == expected
 
 
 

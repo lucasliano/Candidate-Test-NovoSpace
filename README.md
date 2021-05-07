@@ -1,5 +1,11 @@
 # Solución
 
+## Dependencias
+
+```
+pip install bitstring
+```
+
 ## Planificación
 
 ### Primera parte (Actualmente 4 días)
@@ -24,7 +30,7 @@
 	* [ ] Hacer tests!
 		* [x] Reset
 		* [x] Sumas, Restas
-			* [ ] Hacer función toCA2()
+			* [x] Hacer función toCA2()
 		* [x] Desbordamiento
 		* [x] Burst tests
 		* [ ] Entradas a destiempo
