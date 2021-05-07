@@ -13,7 +13,12 @@ Se ejecutaran los tests correspondientes para poder corroborar el correcto funci
   - Evaluación de entradas a destiempo (Verificar que aunque A y B no llegen al mismo tiempo se pueda computar la suma correctamente)
   - Evaluación de salidas a destiempo (Verificar que aunque r_ready no se active, el dispositivo no se cuelgue)
 
+## Dependencias
+Para poder ejecutar el script hace falta instalar el módulo `bitstring`, esto es posible mediante el comando:
 
+```
+pip install bitstring
+```
 
 # Referencias
 

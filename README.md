@@ -32,7 +32,7 @@ pip install bitstring
 			* [x] Hacer función toCA2()
 		* [x] Desbordamiento
 		* [x] Burst tests
-		* [ ] Entradas a destiempo
+		* [x] Entradas a destiempo
 		* [ ] No r_ready en la salida
 		* [x] Evaluar el comportamiento para adders con distinta cantidad de bits
 	* [x] Documentar!

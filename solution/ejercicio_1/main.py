@@ -128,17 +128,10 @@ class Adder(Elaboratable):
 
         # Combinational logic
         # ===================
-
-        with m.If(self.a.valid & self.b.valid):
-            comb += [
-                self.a.ready.eq(1),                     # Indicate that i'm working with the registers
-                self.b.ready.eq(1)
-                ]
-        with m.Else():
-            comb += [
-                self.a.ready.eq(0),                     # Indicate that i'm not able to read cause im waiting both registers
-                self.b.ready.eq(0)
-                ]
+        comb += [
+            self.a.ready.eq(self.a.valid & self.b.valid),  # Indicate that i'm working with the registers
+            self.b.ready.eq(self.a.valid & self.b.valid)   # Indicate that i'm working with the registers
+            ]
 
 
         # Sequential logic
@@ -170,7 +163,7 @@ def toCA2(arg, K):
     '''
     Function Description
     ------------------
-    It takes an N-bit uint as an input and outputs the N-bit int.
+    It takes an N-bit uint as an input and outputs an N-bit signed int.
 
     Parameters
     ----------
@@ -321,7 +314,37 @@ async def burst_test(dut):
 
     assert recved_processed == expected
 
+@cocotb.test()
+async def input_delay_test(dut):
+    '''
+    Test Description
+    ------------------
+    Test the behaivour if the data is not arriving at the same time.
+    '''
+    # Definitions
+    stream_input_a = Stream.Driver(dut.clk, dut, 'a__')
+    stream_input_b = Stream.Driver(dut.clk, dut, 'b__')
+    stream_output = Stream.Driver(dut.clk, dut, 'r__')
 
+    width = len(dut.a__data)
+
+    # Test Data
+    data_a =   [3, -2,  3, -2]
+    data_b =   [2,  3, -4, -2]
+    expected = [5,  1, -1, -4]                 # The expected result is the sum of the data_a + data_b values
+
+    # Test Execution
+    await init_test(dut)
+    stream_input_b.valid.value = 0                  # We assume Port B data is not available yet (We need to do this to avoid an exception in the Stream.Driver.recv)
+    cocotb.fork(stream_input_a.send(data_a))        # Port A input
+    for _ in range(100):                            # We delay the port B input
+        await RisingEdge(dut.clk)
+    cocotb.fork(stream_input_b.send(data_b))        # Port B input
+    recved = await stream_output.recv(len(data_a))  # Save the N values recieved
+
+    recved_processed = [toCA2(recved[_],width) for _ in range(len(recved))]         # Convert the int to a string containing the N-bit ca2 binary equivalent
+
+    assert recved_processed == expected
 
 if __name__ == '__main__':
     print ("Initializing...")
