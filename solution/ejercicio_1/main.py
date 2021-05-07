@@ -324,17 +324,20 @@ async def burst_test(dut):
 
 
 if __name__ == '__main__':
-    print ("Running Tests...")
-    myAdder = Adder(4)
-    # myAdder = Adder(-3)
-    # myAdder = Adder("3")
-    run(
-        myAdder, 'main',
-        ports=
-        [
-            *list(myAdder.a.fields.values()),
-            *list(myAdder.b.fields.values()),
-            *list(myAdder.r.fields.values())
-        ],
-        vcd_file='adder.vcd'
-    )
+    print ("Initializing...")
+    Nbits = [4, 8, 16, 32]
+
+    for N in Nbits:
+        print("Running tests with "+str(N)+" bits.")
+        myAdder = Adder(N)
+        filename= "adder-" + str(N)+ "bit.vcd"
+        run(
+            myAdder, 'main',
+            ports=
+            [
+                *list(myAdder.a.fields.values()),
+                *list(myAdder.b.fields.values()),
+                *list(myAdder.r.fields.values())
+            ],
+            vcd_file=filename
+        )

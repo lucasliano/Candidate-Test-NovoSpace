@@ -35,8 +35,7 @@ pip install bitstring
 		* [x] Burst tests
 		* [ ] Entradas a destiempo
 		* [ ] No r_ready en la salida
-		* [ ] Evaluar el comportamiento para adders con distinta cantidad de bits
-	* [ ] Modularizar el code
+		* [x] Evaluar el comportamiento para adders con distinta cantidad de bits
 	* [ ] Documentar!
 		* [x] Consultar herramienta y idioma de preferencia!
 		* [x] Comentar el código correspondiente a módulo
