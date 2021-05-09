@@ -2,6 +2,8 @@
 
 ## Dependencias
 
+**Nota:** En mi caso decidí no utilizar venv.
+
 ```
 pip install bitstring
 ```
@@ -45,12 +47,22 @@ pip install bitstring
 
 ### Segunda parte (2 días máximo)
 * [x] Leer la consigna del ejercicio 2 detalladamente
-	* [ ] Consultar las dudas al respecto.
-* [ ] Ejecutar script de ejemplo y sacar conclusiones.
-* [ ] Investigar sobre las herramientas
-	* [ ] Sintaxis de Verilog
-	* [ ] Correcto uso de regular expresions
-* [ ] Replanificar el desarrollo de la solución del segundo ejercicio
+	* [x] Consultar las dudas al respecto.
+* [x] Investigar sobre las herramientas
+	* [x] Sintaxis de Verilog
+	* [x] Correcto uso de regular expresions
+* [x] Solución ejercicio 2:
+	* [x] Generar un regex para cada linea a analizar
+	* [x] Crear lógica de funcionamiento
+	* [x] Gestión de archivos
+		* [x] Verificar buenas practicas
+	* [x] Debuggear
+	* [x] Documentar código
+	* [x] Testear
+		* [x] Investigar sobre PyTest
+		* [x] Generar dos tests
+			* [x] Para archivo Verilog
+			* [x] Para archivo de mapa de memoria
 
 # Contacto
 

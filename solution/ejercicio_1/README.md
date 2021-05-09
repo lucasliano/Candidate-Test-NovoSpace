@@ -20,6 +20,16 @@ Para poder ejecutar el script hace falta instalar el módulo `bitstring`, esto e
 pip install bitstring
 ```
 
+## Testing
+
+Para ejecutar los test correr el siguiente comando:
+
+```
+python3 main.py
+```
+
+**Nota:** Los tests se encuentran en el mismo archivo que la declaración del módulo.
+
 # Referencias
 
 * [nMigen Docs](https://nmigen.info/nmigen/latest/lang.html)
