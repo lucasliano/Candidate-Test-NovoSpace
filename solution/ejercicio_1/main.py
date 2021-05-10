@@ -114,6 +114,8 @@ class Adder(Elaboratable):
         self.b = Stream(N, name='b')
         self.r = Stream(N+1, name='r')
 
+        self.r_reg = Signal(N+1)
+
     def elaborate(self, platform):
         # Definitions
         m = Module()
@@ -132,7 +134,10 @@ class Adder(Elaboratable):
         # ===================
         with m.If(self.a.valid & self.b.valid):         # Wait until both a_data and b_data available
             sync += self.r.valid.eq(1)                                 # I Indicates that the result is available to be read
-            sync += self.r.data.eq(self.a.data.as_signed() + self.b.data.as_signed())
+
+            comb += self.r_reg.eq(self.a.data.as_signed() + self.b.data.as_signed())
+
+            #sync += self.r.data.eq(self.a.data.as_signed() + self.b.data.as_signed())
             # nMigen generates a (N+1) signal if we need to add two (N) signals
             # More info: https://nmigen.info/nmigen/latest/lang.html#arithmetic-operators
 
@@ -140,7 +145,11 @@ class Adder(Elaboratable):
             with m.If(self.r.accepted()):               # If r_ready & r_valid
                 sync += self.r.valid.eq(0)              # The output was read and it is not longer available.
 
+        with m.If(self.a.valid & self.b.valid & self.r.ready):
+            sync += self.r.data.eq(self.r_reg)
+
         return m
+
 
 
 
@@ -187,7 +196,7 @@ async def reset_test(dut):
 
     # Test Data
     data_a = [1, 2, 3]
-    data_b = [4, 5, 6]
+    data_b = [5, 5, 6]
     expected = [0, 0, 0, 0]
     recved =   [0, 0, 0, 0]     # Initial recieved values
 
@@ -397,6 +406,7 @@ async def r_ready_delay_test(dut):
 if __name__ == '__main__':
     print ("Initializing...")
     Nbits = [4, 8, 16, 32]
+    Nbits = [4]
 
 
     for N in Nbits:
