@@ -24,25 +24,25 @@ pip install bitstring
 	* [x] cocotb
 * [x] Ejecutar scripts de ejemplo y sacar conclusiones.
 * [x] Replanificar el desarrollo de la solución del primer ejercicio
-* [ ] Solución ejercicio 1:
+* [x] Solución ejercicio 1:
 	* [x] Plantear el circuito digital correspondiente
 	* [x] Verificar que no haya problemas con la instanciación
 	* [x] Simular el comportamiento
-	* [ ] Hacer tests!
+	* [x] Hacer tests!
 		* [x] Reset
 		* [x] Sumas, Restas
 			* [x] Hacer función toCA2()
 		* [x] Desbordamiento
 		* [x] Burst tests
 		* [x] Entradas a destiempo
-		* [ ] No r_ready en la salida
+		* [x] No r_ready en la salida
 		* [x] Evaluar el comportamiento para adders con distinta cantidad de bits
 	* [x] Documentar!
 		* [x] Consultar herramienta y idioma de preferencia!
 		* [x] Comentar el código correspondiente a módulo
 		* [x] Comentar el código correspondiente a los tests.
-	* [x] Debuggear (Por el momento sin bugs)
-
+	* [ ] Debuggear
+		* [ ] Solucionar bug r_ready delay
 
 
 ### Segunda parte (2 días máximo)

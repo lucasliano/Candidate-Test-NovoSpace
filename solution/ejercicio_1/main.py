@@ -101,7 +101,8 @@ class Adder(Elaboratable):
     r_data: Signal(N+1), out
         (N+1)-bit output port. The result of the sum will be load here one clock cycle after both summands were read.
     '''
-    def __init__(self, N):
+    def __init__(self, N):                  # We assume Port B data is not available yet (We need to do this to avoid an exception in the Stream.Driver.recv)
+
         # Arguments Validation
         if N < 1:   # If the input argument type is not an integer it should raise a TypeError
             raise InvalidArgument("The argument 'N' should be a natural value greater than 1.")
@@ -113,13 +114,6 @@ class Adder(Elaboratable):
         self.b = Stream(N, name='b')
         self.r = Stream(N+1, name='r')
 
-        # Reset Values Definition
-        # self.r.data.reset = 0     # Default reset value = 0x0
-        #self.r.valid.reset = 0
-        self.a.ready.reset = 0
-        self.b.ready.reset = 0
-
-
     def elaborate(self, platform):
         # Definitions
         m = Module()
@@ -129,23 +123,22 @@ class Adder(Elaboratable):
         # Combinational logic
         # ===================
         comb += [
-            self.a.ready.eq(self.a.valid & self.b.valid),  # Indicate that i'm working with the registers
-            self.b.ready.eq(self.a.valid & self.b.valid)   # Indicate that i'm working with the registers
+            self.a.ready.eq(self.a.valid & self.b.valid & self.r.ready),  # I Indicate that i'm working with the registers
+            self.b.ready.eq(self.a.valid & self.b.valid & self.r.ready)   # I Indicate that i'm working with the registers
             ]
 
 
         # Sequential logic
         # ===================
         with m.If(self.a.valid & self.b.valid):         # Wait until both a_data and b_data available
-            sync += self.r.valid.eq(1)                  # Indicates that the result is available to be read
-
+            sync += self.r.valid.eq(1)                                 # I Indicates that the result is available to be read
             sync += self.r.data.eq(self.a.data.as_signed() + self.b.data.as_signed())
             # nMigen generates a (N+1) signal if we need to add two (N) signals
             # More info: https://nmigen.info/nmigen/latest/lang.html#arithmetic-operators
+
         with m.Else():
             with m.If(self.r.accepted()):               # If r_ready & r_valid
                 sync += self.r.valid.eq(0)              # The output was read and it is not longer available.
-
 
         return m
 
@@ -201,9 +194,9 @@ async def reset_test(dut):
     # Test Execution
     cocotb.fork(Clock(dut.clk, 10, 'ns').start())
     await RisingEdge(dut.clk)
-    dut.rst <= 1
-    await RisingEdge(dut.clk)
-    await RisingEdge(dut.clk)
+    stream_input_b.ready.value = 0
+    stream_input_a.ready.value = 0
+    stream_output.ready.value = 0
     dut.rst <= 0
     cocotb.fork(stream_input_a.send(data_a))
     cocotb.fork(stream_input_b.send(data_b))
@@ -337,7 +330,7 @@ async def input_delay_test(dut):
     await init_test(dut)
     stream_input_b.valid.value = 0                  # We assume Port B data is not available yet (We need to do this to avoid an exception in the Stream.Driver.recv)
     cocotb.fork(stream_input_a.send(data_a))        # Port A input
-    for _ in range(100):                            # We delay the port B input
+    for _ in range(10):                            # We delay the port B input
         await RisingEdge(dut.clk)
     cocotb.fork(stream_input_b.send(data_b))        # Port B input
     recved = await stream_output.recv(len(data_a))  # Save the N values recieved
@@ -346,9 +339,65 @@ async def input_delay_test(dut):
 
     assert recved_processed == expected
 
+
+@cocotb.test()
+async def r_ready_delay_test(dut):
+    '''
+    Test Description
+    ------------------
+    Test the behaivour if the r_ready signalk is not arriving at the same time as the input data is.
+    '''
+    # Definitionsawait RisingEdge(dut.clk)
+    stream_input_a = Stream.Driver(dut.clk, dut, 'a__')
+    stream_input_b = Stream.Driver(dut.clk, dut, 'b__')
+    stream_output = Stream.Driver(dut.clk, dut, 'r__')
+
+    width = len(dut.a__data)
+
+    # Test Data
+    data_a =   [3, -2,  3, -2]
+    data_b =   [2,  3, -4, -2]
+    expected = [5,  1, -1, -4]                 # The expected result is the sum of the data_a + data_b values
+
+    # Test Execution
+    await init_test(dut)
+    #stream_output.ready.value = 0                   # To avoid exception in the simulator
+    cocotb.fork(stream_input_a.send(data_a))        # Port A input
+    cocotb.fork(stream_input_b.send(data_b))        # Port B input
+
+
+
+    recved = []
+    # We redifine the recv func to simulate this behaivour
+    for _ in range(len(data_a)):
+
+        # We continue with the normal recv func
+        stream_output.ready.value = 1
+        await RisingEdge(dut.clk)
+        print(stream_output.ready.value)
+        while stream_output.valid.value == 0:
+            await RisingEdge(dut.clk)
+        stream_output.ready.value = 0
+        recved.append(stream_output.data.value.integer)
+        # We delay the next r_ready signal 1 clk
+        await RisingEdge(dut.clk)
+        await RisingEdge(dut.clk)
+
+
+
+
+
+
+    recved_processed = [toCA2(recved[_],width) for _ in range(len(recved))]         # Convert the int to a string containing the N-bit ca2 binary equivalent
+
+    print(recved_processed)
+
+    assert recved_processed == expected
+
 if __name__ == '__main__':
     print ("Initializing...")
     Nbits = [4, 8, 16, 32]
+
 
     for N in Nbits:
         print("Running tests with "+str(N)+" bits.")
