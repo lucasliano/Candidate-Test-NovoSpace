@@ -406,7 +406,6 @@ async def r_ready_delay_test(dut):
 if __name__ == '__main__':
     print ("Initializing...")
     Nbits = [4, 8, 16, 32]
-    Nbits = [4]
 
 
     for N in Nbits:
