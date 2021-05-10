@@ -41,8 +41,8 @@ pip install bitstring
 		* [x] Consultar herramienta y idioma de preferencia!
 		* [x] Comentar el código correspondiente a módulo
 		* [x] Comentar el código correspondiente a los tests.
-	* [ ] Debuggear
-		* [ ] Solucionar bug r_ready delay
+	* [x] Debuggear
+		* [x] Solucionar bug r_ready delay
 
 
 ### Segunda parte (2 días máximo)
